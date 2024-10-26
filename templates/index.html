@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rule Engine</title>
+</head>
+<body>
+    <h1>Create and Test Rules</h1>
+    
+    <!-- Create Rule Form -->
+    <form id="ruleForm">
+        <label>Rule String:</label><br>
+        <input type="text" id="ruleString" required><br><br>
+        <button type="button" onclick="createRule()">Create Rule</button>
+    </form>
+
+    <h2>Evaluate Rule</h2>
+    
+    <!-- Evaluate Rule Form -->
+    <form id="evaluateForm">
+        <label>Value for x:</label><br>
+        <input type="number" id="valueForX" required><br><br>
+        <button type="button" onclick="evaluateRule()">Evaluate Rule</button>
+    </form>
+
+    <h2>Result:</h2>
+    <pre id="resultDisplay"></pre>
+
+    <script>
+        function createRule() {
+            let ruleString = document.getElementById("ruleString").value;
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rule_string: ruleString })
+            }).then(response => response.json())
+            .then(data => {
+                alert("Rule Created with ID: " + data.rule_id);
+                // Clear the input field
+                document.getElementById("ruleString").value = "";
+            })
+            .catch(error => {
+                console.error("Error creating rule:", error);
+            });
+        }
+
+        function evaluateRule() {
+            let valueForX = document.getElementById("valueForX").value;
+            fetch('/evaluate_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: parseFloat(valueForX) })
+            }).then(response => response.json())
+            .then(data => {
+                document.getElementById("resultDisplay").textContent = JSON.stringify(data);
+                // Clear the input field
+                document.getElementById("valueForX").value = "";
+            })
+            .catch(error => {
+                console.error("Error evaluating rule:", error);
+            });
+        }
+    </script>
+</body>
+</html>
